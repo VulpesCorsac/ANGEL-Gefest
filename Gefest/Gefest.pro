@@ -31,17 +31,27 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         Gefest.cpp \
     ../ANGEL/Equipment/CommonFunctionsForSRS/SRS.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    ../ANGEL/Equipment/TemperatureController/TemperatureController/TemperatureController.cpp \
+    ../ANGEL/Equipment/TemperatureController/PTC10/PTC10.cpp \
+    ../ANGEL/Functions/AllFunctions.cpp \
+    ../ANGEL/HardwareCommunication/SerialPort/SerialPort.cpp
 
 HEADERS  += Gefest.h \
     ../ANGEL/Equipment/CommonFunctionsForSRS/SRS.h \
-    qcustomplot.h
+    qcustomplot.h \
+    ../ANGEL/Equipment/TemperatureController/TemperatureController/TemperatureController.h \
+    ../ANGEL/Equipment/TemperatureController/PTC10/PTC10.h \
+    ../ANGEL/Equipment/TemperatureController/AllTemperatureControllers.h \
+    ../ANGEL/Functions/AllFunctions.h \
+    ../ANGEL/HardwareCommunication/SerialPort/SerialPort.h
 
 FORMS    += Gefest.ui
 
 RESOURCES += Resource.qrc
 
 DISTFILES += Resource.rc \
-    ConfigGefest.conf
+    ConfigGefest.conf \
+    Ico.ico
 
 win32:RC_FILE = Resource.rc

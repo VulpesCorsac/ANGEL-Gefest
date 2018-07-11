@@ -17,7 +17,7 @@ Gefest::Gefest(QWidget *parent) :
         dataFolder.mkpath(".");
 
     on_actionCom_UPD_triggered();
-
+/*
     ui->checkBoxOnChannel_1->hide();
     ui->comboBoxChannel_1->hide();
     ui->lineEditChannel_1->hide();
@@ -51,12 +51,20 @@ Gefest::Gefest(QWidget *parent) :
     ui->pushButtonExport->hide();
     ui->lineEditExportFileHeader->hide();
 
-    ui->labelX->hide();
-    ui->lineEditX->hide();
-    ui->labelY->hide();
-    ui->lineEditY->hide();
-    ui->customPlot->hide();
+    ui->checkBoxPlotFixedTemperature->hide();
+    ui->labelXTemperature->hide();
+    ui->lineEditXTemperature->hide();
+    ui->labelYTemperature->hide();
+    ui->lineEditYTemperature->hide();
+    ui->customPlotTemperature->hide();
 
+    ui->checkBoxPlotFixedPower->hide();
+    ui->labelXPower->hide();
+    ui->lineEditXPower->hide();
+    ui->labelYPower->hide();
+    ui->lineEditYPower->hide();
+    ui->customPlotPower->hide();
+//*/
     this->serial.setDataBits(QSerialPort::Data8);
     this->serial.setBaudRate(QSerialPort::Baud9600);
     this->serial.setStopBits(QSerialPort::OneStop);
@@ -65,17 +73,30 @@ Gefest::Gefest(QWidget *parent) :
 
     QFont font;
     font.setStyleStrategy(QFont::NoAntialias);
-    ui->customPlot->setNotAntialiasedElements(QCP::aeAll);
-    ui->customPlot->xAxis->setTickLabelFont(font);
-    ui->customPlot->yAxis->setTickLabelFont(font);
-    ui->customPlot->legend->setFont(font);
-    ui->customPlot->axisRect()->setupFullAxesBox();
 
-    ui->customPlot->clearGraphs();
-    ui->customPlot->addGraph();
-    ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    ui->customPlotTemperature->setNotAntialiasedElements(QCP::aeAll);
+    ui->customPlotTemperature->xAxis->setTickLabelFont(font);
+    ui->customPlotTemperature->yAxis->setTickLabelFont(font);
+    ui->customPlotTemperature->legend->setFont(font);
+    ui->customPlotTemperature->axisRect()->setupFullAxesBox();
 
-    connect(ui->customPlot, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(on_plot_Clicked(QMouseEvent*)));
+    ui->customPlotPower->setNotAntialiasedElements(QCP::aeAll);
+    ui->customPlotPower->xAxis->setTickLabelFont(font);
+    ui->customPlotPower->yAxis->setTickLabelFont(font);
+    ui->customPlotPower->legend->setFont(font);
+    ui->customPlotPower->axisRect()->setupFullAxesBox();
+
+    ui->customPlotTemperature->clearGraphs();
+    ui->customPlotTemperature->addGraph();
+    ui->customPlotTemperature->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+
+    ui->customPlotPower->clearGraphs();
+    ui->customPlotPower->addGraph();
+    ui->customPlotPower->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+
+    connect(ui->customPlotTemperature, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(on_plotTemperature_Clicked(QMouseEvent*)));
+
+    connect(ui->customPlotPower, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(on_plotPower_Clicked(QMouseEvent*)));
 
     if (freopen("ConfigGefest.conf", "r+", stdin) != nullptr) {
         std::string buffer;
@@ -157,7 +178,7 @@ void Gefest::on_pushButtonAction_clicked()
 
         QStringList channelsRaw = channelsString.split(',');
         QStringList channels;
-        for (size_t i = 0; i < channelsRaw.size(); i++)
+        for (int i = 0; i < channelsRaw.size(); i++)
             if (!channelsRaw[i].trimmed().isEmpty())
                 channels.push_back(channelsRaw[i].trimmed());
 
@@ -172,14 +193,23 @@ void Gefest::on_pushButtonAction_clicked()
         ui->checkBoxOnChannel_1->show();
         ui->comboBoxChannel_1->show();
         ui->lineEditChannel_1->show();
+        ui->checkBoxPlotChannel_1->show();
 
-        ui->labelX->show();
-        ui->lineEditX->show();
-        ui->labelY->show();
-        ui->lineEditY->show();
-        ui->customPlot->show();
+        ui->labelXTemperature->show();
+        ui->lineEditXTemperature->show();
+        ui->labelYTemperature->show();
+        ui->lineEditYTemperature->show();
+        ui->customPlotTemperature->show();
 
-        ui->pushButtonPlot->show();
+        ui->labelXPower->show();
+        ui->lineEditXPower->show();
+        ui->labelYPower->show();
+        ui->lineEditYPower->show();
+        ui->customPlotPower->show();
+
+        ui->pushButtonStart->show();
+        ui->checkBoxPlotFixedTemperature->show();
+        ui->checkBoxPlotFixedPower->show();
 //        ui->pushButtonExport->show();
 //        ui->lineEditExportFileHeader->show();
     } else {
@@ -190,28 +220,45 @@ void Gefest::on_pushButtonAction_clicked()
         ui->checkBoxOnChannel_1->hide();
         ui->comboBoxChannel_1->hide();
         ui->lineEditChannel_1->hide();
+        ui->checkBoxPlotChannel_1->hide();
+
         ui->checkBoxOnChannel_2->hide();
         ui->comboBoxChannel_2->hide();
         ui->lineEditChannel_2->hide();
+        ui->checkBoxPlotChannel_2->hide();
+
         ui->checkBoxOnChannel_3->hide();
         ui->comboBoxChannel_3->hide();
         ui->lineEditChannel_3->hide();
+        ui->checkBoxPlotChannel_3->hide();
+
         ui->checkBoxOnChannel_4->hide();
         ui->comboBoxChannel_4->hide();
         ui->lineEditChannel_4->hide();
+        ui->checkBoxPlotChannel_4->hide();
+
         ui->checkBoxOnChannel_5->hide();
         ui->comboBoxChannel_5->hide();
         ui->lineEditChannel_5->hide();
+        ui->checkBoxPlotChannel_5->hide();
 
-        ui->pushButtonPlot->hide();
+        ui->pushButtonStart->hide();
+        ui->checkBoxPlotFixedTemperature->hide();
+        ui->checkBoxPlotFixedPower->hide();
         ui->pushButtonExport->hide();
         ui->lineEditExportFileHeader->hide();
 
-        ui->labelX->hide();
-        ui->lineEditX->hide();
-        ui->labelY->hide();
-        ui->lineEditY->hide();
-        ui->customPlot->hide();
+        ui->labelXTemperature->hide();
+        ui->lineEditXTemperature->hide();
+        ui->labelYTemperature->hide();
+        ui->lineEditYTemperature->hide();
+        ui->customPlotTemperature->hide();
+
+        ui->labelXPower->hide();
+        ui->lineEditXPower->hide();
+        ui->labelYPower->hide();
+        ui->lineEditYPower->hide();
+        ui->customPlotPower->hide();
 
         ui->checkBoxOnChannel_1->setChecked(false);
         ui->checkBoxOnChannel_2->setChecked(false);
@@ -219,8 +266,29 @@ void Gefest::on_pushButtonAction_clicked()
         ui->checkBoxOnChannel_4->setChecked(false);
         ui->checkBoxOnChannel_5->setChecked(false);
 
+        ui->checkBoxPlotChannel_1->setChecked(false);
+        ui->checkBoxPlotChannel_2->setChecked(false);
+        ui->checkBoxPlotChannel_3->setChecked(false);
+        ui->checkBoxPlotChannel_4->setChecked(false);
+        ui->checkBoxPlotChannel_5->setChecked(false);
+
         ui->pushButtonAction->setText("Connect");
     }
+
+    return;
+}
+
+void Gefest::updateTimeString()
+{
+    this->timeString = QDateTime::currentDateTime().toString("dd_MM_yyyy_hh_mm_ss");
+}
+
+QString Gefest::getTimeString()
+{
+    if (this->timeString.isEmpty())
+        updateTimeString();
+
+    return this->timeString;
 }
 
 void Gefest::on_checkBoxOnChannel_1_stateChanged(int arg1)
@@ -230,12 +298,14 @@ void Gefest::on_checkBoxOnChannel_1_stateChanged(int arg1)
         ui->checkBoxOnChannel_2->show();
         ui->comboBoxChannel_2->show();
         ui->lineEditChannel_2->show();
+        ui->checkBoxPlotChannel_2->show();
     }
     if (ui->checkBoxOnChannel_1->checkState() == Qt::Unchecked)
     {
         ui->checkBoxOnChannel_2->hide();
         ui->comboBoxChannel_2->hide();
         ui->lineEditChannel_2->hide();
+        ui->checkBoxPlotChannel_2->hide();
     }
 
     return;
@@ -250,6 +320,7 @@ void Gefest::on_checkBoxOnChannel_2_stateChanged(int arg1)
         ui->checkBoxOnChannel_3->show();
         ui->comboBoxChannel_3->show();
         ui->lineEditChannel_3->show();
+        ui->checkBoxPlotChannel_3->show();
     }
     if (ui->checkBoxOnChannel_2->checkState() == Qt::Unchecked)
     {
@@ -258,6 +329,7 @@ void Gefest::on_checkBoxOnChannel_2_stateChanged(int arg1)
         ui->checkBoxOnChannel_3->hide();
         ui->comboBoxChannel_3->hide();
         ui->lineEditChannel_3->hide();
+        ui->checkBoxPlotChannel_3->hide();
     }
 
     return;
@@ -272,6 +344,7 @@ void Gefest::on_checkBoxOnChannel_3_stateChanged(int arg1)
         ui->checkBoxOnChannel_4->show();
         ui->comboBoxChannel_4->show();
         ui->lineEditChannel_4->show();
+        ui->checkBoxPlotChannel_4->show();
     }
     if (ui->checkBoxOnChannel_3->checkState() == Qt::Unchecked)
     {
@@ -280,6 +353,7 @@ void Gefest::on_checkBoxOnChannel_3_stateChanged(int arg1)
         ui->checkBoxOnChannel_4->hide();
         ui->comboBoxChannel_4->hide();
         ui->lineEditChannel_4->hide();
+        ui->checkBoxPlotChannel_4->hide();
     }
 
     return;
@@ -294,6 +368,7 @@ void Gefest::on_checkBoxOnChannel_4_stateChanged(int arg1)
         ui->checkBoxOnChannel_5->show();
         ui->comboBoxChannel_5->show();
         ui->lineEditChannel_5->show();
+        ui->checkBoxPlotChannel_5->show();
     }
     if (ui->checkBoxOnChannel_4->checkState() == Qt::Unchecked)
     {
@@ -302,6 +377,7 @@ void Gefest::on_checkBoxOnChannel_4_stateChanged(int arg1)
         ui->checkBoxOnChannel_5->hide();
         ui->comboBoxChannel_5->hide();
         ui->lineEditChannel_5->hide();
+        ui->checkBoxPlotChannel_5->hide();
     }
 
     return;
@@ -321,24 +397,32 @@ void Gefest::on_checkBoxOnChannel_5_stateChanged(int arg1)
     return;
 }
 
-void Gefest::on_plot_Clicked(QMouseEvent *event) const
+void Gefest::on_plotTemperature_Clicked(QMouseEvent *event) const
 {
-    ui->lineEditX->setText(QString::number(ui->customPlot->xAxis->pixelToCoord(event->pos().x())));
-    ui->lineEditY->setText(QString::number(ui->customPlot->yAxis->pixelToCoord(event->pos().y())));
+    ui->lineEditXTemperature->setText(QString::number(ui->customPlotTemperature->xAxis->pixelToCoord(event->pos().x())));
+    ui->lineEditYTemperature->setText(QString::number(ui->customPlotTemperature->yAxis->pixelToCoord(event->pos().y())));
 
     return;
 }
 
-void Gefest::on_pushButtonPlot_clicked()
+void Gefest::on_plotPower_Clicked(QMouseEvent *event) const
 {
-    if (ui->pushButtonPlot->text() == "Plot")
+    ui->lineEditXPower->setText(QString::number(ui->customPlotPower->xAxis->pixelToCoord(event->pos().x())));
+    ui->lineEditYPower->setText(QString::number(ui->customPlotPower->yAxis->pixelToCoord(event->pos().y())));
+
+    return;
+}
+
+void Gefest::on_pushButtonStart_clicked()
+{
+    if (ui->pushButtonStart->text() == "Plot")
     {
         if (ui->checkBoxOnChannel_1->checkState() == Qt::Unchecked)
             return;
 
         this->setAttribute(Qt::WA_DeleteOnClose, true);
 
-        ui->pushButtonPlot->setText("Stop");
+        ui->pushButtonStart->setText("Stop");
 
         this->run = true;
 
@@ -357,7 +441,7 @@ void Gefest::on_pushButtonPlot_clicked()
 
         RunExperiment();
     } else {
-        ui->pushButtonPlot->setText("Plot");
+        ui->pushButtonStart->setText("Plot");
 
         this->setAttribute(Qt::WA_DeleteOnClose, false);
 
@@ -377,6 +461,11 @@ void Gefest::on_pushButtonPlot_clicked()
              ui->checkBoxOnChannel_3->setDisabled(true);
              ui->checkBoxOnChannel_4->setDisabled(true);
              ui->checkBoxOnChannel_5->setDisabled(true);
+             ui->checkBoxPlotChannel_1->setEnabled(true);
+             ui->checkBoxPlotChannel_2->setDisabled(true);
+             ui->checkBoxPlotChannel_3->setDisabled(true);
+             ui->checkBoxPlotChannel_4->setDisabled(true);
+             ui->checkBoxPlotChannel_5->setDisabled(true);
          }
         if (ui->checkBoxOnChannel_1->checkState() == Qt::Checked &&
             ui->checkBoxOnChannel_2->checkState() == Qt::Unchecked) {
@@ -385,6 +474,11 @@ void Gefest::on_pushButtonPlot_clicked()
             ui->checkBoxOnChannel_3->setEnabled(true);
             ui->checkBoxOnChannel_4->setEnabled(true);
             ui->checkBoxOnChannel_5->setEnabled(true);
+            ui->checkBoxPlotChannel_1->setEnabled(true);
+            ui->checkBoxPlotChannel_2->setEnabled(true);
+            ui->checkBoxPlotChannel_3->setEnabled(true);
+            ui->checkBoxPlotChannel_4->setEnabled(true);
+            ui->checkBoxPlotChannel_5->setEnabled(true);
         }
         if (ui->checkBoxOnChannel_2->checkState() == Qt::Checked &&
             ui->checkBoxOnChannel_3->checkState() == Qt::Unchecked) {
@@ -393,6 +487,11 @@ void Gefest::on_pushButtonPlot_clicked()
             ui->checkBoxOnChannel_3->setEnabled(true);
             ui->checkBoxOnChannel_4->setEnabled(true);
             ui->checkBoxOnChannel_5->setEnabled(true);
+            ui->checkBoxPlotChannel_1->setDisabled(true);
+            ui->checkBoxPlotChannel_2->setEnabled(true);
+            ui->checkBoxPlotChannel_3->setEnabled(true);
+            ui->checkBoxPlotChannel_4->setEnabled(true);
+            ui->checkBoxPlotChannel_5->setEnabled(true);
         }
         if (ui->checkBoxOnChannel_3->checkState() == Qt::Checked &&
             ui->checkBoxOnChannel_4->checkState() == Qt::Unchecked) {
@@ -401,6 +500,11 @@ void Gefest::on_pushButtonPlot_clicked()
             ui->checkBoxOnChannel_3->setEnabled(true);
             ui->checkBoxOnChannel_4->setEnabled(true);
             ui->checkBoxOnChannel_5->setEnabled(true);
+            ui->checkBoxPlotChannel_1->setDisabled(true);
+            ui->checkBoxPlotChannel_2->setDisabled(true);
+            ui->checkBoxPlotChannel_3->setEnabled(true);
+            ui->checkBoxPlotChannel_4->setEnabled(true);
+            ui->checkBoxPlotChannel_5->setEnabled(true);
         }
         if (ui->checkBoxOnChannel_4->checkState() == Qt::Checked &&
             ui->checkBoxOnChannel_5->checkState() == Qt::Unchecked) {
@@ -409,6 +513,11 @@ void Gefest::on_pushButtonPlot_clicked()
              ui->checkBoxOnChannel_3->setDisabled(true);
              ui->checkBoxOnChannel_4->setEnabled(true);
              ui->checkBoxOnChannel_5->setEnabled(true);
+             ui->checkBoxPlotChannel_1->setDisabled(true);
+             ui->checkBoxPlotChannel_2->setDisabled(true);
+             ui->checkBoxPlotChannel_3->setDisabled(true);
+             ui->checkBoxPlotChannel_4->setEnabled(true);
+             ui->checkBoxPlotChannel_5->setEnabled(true);
          }
         if (ui->checkBoxOnChannel_5->checkState() == Qt::Checked) {
              ui->checkBoxOnChannel_1->setDisabled(true);
@@ -416,8 +525,28 @@ void Gefest::on_pushButtonPlot_clicked()
              ui->checkBoxOnChannel_3->setDisabled(true);
              ui->checkBoxOnChannel_4->setDisabled(true);
              ui->checkBoxOnChannel_5->setEnabled(true);
+             ui->checkBoxPlotChannel_1->setDisabled(true);
+             ui->checkBoxPlotChannel_2->setDisabled(true);
+             ui->checkBoxPlotChannel_3->setDisabled(true);
+             ui->checkBoxPlotChannel_4->setDisabled(true);
+             ui->checkBoxPlotChannel_5->setEnabled(true);
+
          }
     }
+
+    return;
+}
+
+void Gefest::on_pushButtonPause_clicked()
+{
+
+    return;
+}
+
+void Gefest::on_pushButtonStop_clicked()
+{
+
+    return;
 }
 
 void Gefest::RunExperiment()
@@ -428,9 +557,13 @@ void Gefest::RunExperiment()
     double currentTime = 0;
     double value = 0;
 
-    ui->customPlot->xAxis->setLabel("Time");
-    ui->customPlot->yAxis->setLabel("Value");
-    ui->customPlot->clearGraphs();
+    ui->customPlotTemperature->xAxis->setLabel("Time");
+    ui->customPlotTemperature->yAxis->setLabel("Temperature");
+    ui->customPlotTemperature->clearGraphs();
+
+    ui->customPlotPower->xAxis->setLabel("Time");
+    ui->customPlotPower->yAxis->setLabel("Temperature");
+    ui->customPlotPower->clearGraphs();
 
     QString File = this->dataPath + QDateTime::currentDateTime().toString("yyyy_MM_dd_HH_mm_ss") + ".dat";
     freopen(File.toStdString().c_str(), "w+", stdout);
@@ -442,28 +575,28 @@ void Gefest::RunExperiment()
     bool channelChecked_5 = ui->checkBoxOnChannel_5->checkState() == Qt::Checked;
 
     if (channelChecked_1) {
-        ui->customPlot->addGraph();
-        ui->customPlot->graph(0)->setPen(QPen(Qt::blue));
+        ui->customPlotTemperature->addGraph();
+        ui->customPlotTemperature->graph(0)->setPen(QPen(Qt::blue));
         std::cout << "Time1\t" << ui->comboBoxChannel_1->currentText().toStdString();
     }
     if (channelChecked_2) {
-        ui->customPlot->addGraph();
-        ui->customPlot->graph(1)->setPen(QPen(Qt::red));
+        ui->customPlotTemperature->addGraph();
+        ui->customPlotTemperature->graph(1)->setPen(QPen(Qt::red));
         std::cout << "\tTime2\t" << ui->comboBoxChannel_2->currentText().toStdString();
     }
     if (channelChecked_3) {
-        ui->customPlot->addGraph();
-        ui->customPlot->graph(2)->setPen(QPen(Qt::green));
+        ui->customPlotTemperature->addGraph();
+        ui->customPlotTemperature->graph(2)->setPen(QPen(Qt::green));
         std::cout << "\tTime3\t" << ui->comboBoxChannel_3->currentText().toStdString();
     }
     if (channelChecked_4) {
-        ui->customPlot->addGraph();
-        ui->customPlot->graph(3)->setPen(QPen(Qt::yellow));
+        ui->customPlotTemperature->addGraph();
+        ui->customPlotTemperature->graph(3)->setPen(QPen(Qt::yellow));
         std::cout << "\tTime4\t" << ui->comboBoxChannel_4->currentText().toStdString();
     }
     if (channelChecked_5) {
-        ui->customPlot->addGraph();
-        ui->customPlot->graph(4)->setPen(QPen(Qt::black));
+        ui->customPlotTemperature->addGraph();
+        ui->customPlotTemperature->graph(4)->setPen(QPen(Qt::black));
         std::cout << "\tTime1\t" << ui->comboBoxChannel_5->currentText().toStdString();
     }
     fprintf(stdout, "\n");
@@ -490,15 +623,22 @@ void Gefest::RunExperiment()
         channelName_5 += ".value";
     channelName_5 += "?";
 
+    bool ok = true;
+
     while (this->run) {
 
         if (channelChecked_1) {
             this->srs.sendQuery(&(this->serial), channelName_1, response);
-            value = response.toDouble();
+            value = response.toDouble(&ok);
             currentTime = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0 - timeStart;
-            fprintf(stdout, "%0.20e\t%0.20e", currentTime, value);
-            ui->lineEditChannel_1->setText(response);
-            ui->customPlot->graph(0)->addData(currentTime, value);
+            if (ok) {
+                fprintf(stdout, "%0.20e\t%0.20e", currentTime, value);
+                ui->lineEditChannel_1->setText(response);
+            } else {
+                fprintf(stdout, "%0.20e\tFAIL", currentTime);
+                ui->lineEditChannel_1->setText("LOST SIGNAL");
+            }
+            ui->customPlotTemperature->graph(0)->addData(currentTime, value);
 
             if (yMin < 0 || value < yMin)
                 yMin = value;
@@ -507,11 +647,16 @@ void Gefest::RunExperiment()
         }
         if (channelChecked_2) {
             this->srs.sendQuery(&(this->serial), channelName_2, response);
-            value = response.toDouble();
+            value = response.toDouble(&ok);
             currentTime = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0 - timeStart;
-            fprintf(stdout, "\t%0.20e\t%0.20e", currentTime, value);
-            ui->lineEditChannel_2->setText(response);
-            ui->customPlot->graph(1)->addData(currentTime, value);
+            if (ok) {
+                fprintf(stdout, "%0.20e\t%0.20e", currentTime, value);
+                ui->lineEditChannel_2->setText(response);
+            } else {
+                fprintf(stdout, "%0.20e\tFAIL", currentTime);
+                ui->lineEditChannel_2->setText("LOST SIGNAL");
+            }
+            ui->customPlotTemperature->graph(1)->addData(currentTime, value);
 
             if (yMin < 0 || value < yMin)
                 yMin = value;
@@ -520,11 +665,16 @@ void Gefest::RunExperiment()
         }
         if (channelChecked_3) {
             this->srs.sendQuery(&(this->serial), channelName_3, response);
-            value = response.toDouble();
+            value = response.toDouble(&ok);
             currentTime = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0 - timeStart;
-            fprintf(stdout, "\t%0.20e\t%0.20e", currentTime, value);
-            ui->lineEditChannel_3->setText(response);
-            ui->customPlot->graph(2)->addData(currentTime, value);
+            if (ok) {
+                fprintf(stdout, "%0.20e\t%0.20e", currentTime, value);
+                ui->lineEditChannel_3->setText(response);
+            } else {
+                fprintf(stdout, "%0.20e\tFAIL", currentTime);
+                ui->lineEditChannel_3->setText("LOST SIGNAL");
+            }
+            ui->customPlotTemperature->graph(2)->addData(currentTime, value);
 
             if (yMin < 0 || value < yMin)
                 yMin = value;
@@ -533,11 +683,16 @@ void Gefest::RunExperiment()
         }
         if (channelChecked_4) {
             this->srs.sendQuery(&(this->serial), channelName_4, response);
-            value = response.toDouble();
+            value = response.toDouble(&ok);
             currentTime = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0 - timeStart;
-            fprintf(stdout, "\t%0.20e\t%0.20e", currentTime, value);
-            ui->lineEditChannel_4->setText(response);
-            ui->customPlot->graph(3)->addData(currentTime, value);
+            if (ok) {
+                fprintf(stdout, "%0.20e\t%0.20e", currentTime, value);
+                ui->lineEditChannel_4->setText(response);
+            } else {
+                fprintf(stdout, "%0.20e\tFAIL", currentTime);
+                ui->lineEditChannel_4->setText("LOST SIGNAL");
+            }
+            ui->customPlotTemperature->graph(3)->addData(currentTime, value);
 
             if (yMin < 0 || value < yMin)
                 yMin = value;
@@ -546,11 +701,16 @@ void Gefest::RunExperiment()
         }
         if (channelChecked_5) {
             this->srs.sendQuery(&(this->serial), channelName_5, response);
-            value = response.toDouble();
+            value = response.toDouble(&ok);
             currentTime = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0 - timeStart;
-            fprintf(stdout, "\t%0.20e\t%0.20e", currentTime, value);
-            ui->lineEditChannel_5->setText(response);
-            ui->customPlot->graph(4)->addData(currentTime, value);
+            if (ok) {
+                fprintf(stdout, "%0.20e\t%0.20e", currentTime, value);
+                ui->lineEditChannel_5->setText(response);
+            } else {
+                fprintf(stdout, "%0.20e\tFAIL", currentTime);
+                ui->lineEditChannel_5->setText("LOST SIGNAL");
+            }
+            ui->customPlotTemperature->graph(4)->addData(currentTime, value);
 
             if (yMin < 0 || value < yMin)
                 yMin = value;
@@ -561,12 +721,68 @@ void Gefest::RunExperiment()
         QTest::qWait(5);
         fprintf(stdout, "\n");
 
-        ui->customPlot->xAxis->setRange(0, currentTime);
-        ui->customPlot->yAxis->setRange(yMin, yMax);
-        ui->customPlot->replot();
+        if (ui->checkBoxPlotFixedTemperature->checkState() == Qt::Unchecked) {
+            ui->customPlotTemperature->xAxis->setRange(0, currentTime);
+            ui->customPlotTemperature->yAxis->setRange(yMin, yMax);
+            ui->customPlotTemperature->replot();
+        }
     }
 
     fclose(stdout);
+
+    return;
+}
+
+void Gefest::on_toolButtonImport_clicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File with Data"), "",
+            tr("Data Files (*.dat);; Text Files (*.txt);; All Files (*.*)"));
+    ui->lineEditExportFileHeader->setText(fileName);
+
+    return;
+}
+
+void Gefest::on_toolButtonExport_clicked()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "",
+        tr("Data Files (*.dat);; Text Files (*.txt);; All Files (*.*)"));
+    ui->lineEditExportFileHeader->setText(fileName);
+
+    return;
+}
+
+void Gefest::on_pushButtonImport_clicked()
+{
+
+    return;
+}
+
+void Gefest::on_pushButtonExport_clicked()
+{
+
+    return;
+}
+
+void Gefest::on_pushButtonSetP_clicked()
+{
+
+    return;
+}
+
+void Gefest::on_pushButtonSetT_clicked()
+{
+
+    return;
+}
+
+void Gefest::loadConfig()
+{
+
+    return;
+}
+
+void Gefest::saveConfig()
+{
 
     return;
 }
