@@ -32,6 +32,8 @@ private:
     bool run = false;
     bool old = false;
 
+    bool listLoad = false;
+
     QString absolutePath = "";
     QString dataPath     = "";
 
@@ -57,8 +59,10 @@ private slots:
     void on_checkBoxOnChannel_4_stateChanged(int arg1);
     void on_checkBoxOnChannel_5_stateChanged(int arg1);
 
-    void on_plotTemperature_Clicked(QMouseEvent* event) const;
-    void on_plotPower_Clicked(QMouseEvent* event) const;
+    void on_plotChannel_1_Clicked(QMouseEvent* event) const;
+    void on_plotChannel_2_Clicked(QMouseEvent* event) const;
+    void on_plotChannel_3_Clicked(QMouseEvent* event) const;
+    void on_plotChannel_4_Clicked(QMouseEvent* event) const;
 
     void on_pushButtonStart_clicked();
     void on_pushButtonPause_clicked();
@@ -66,16 +70,23 @@ private slots:
 
     void RunExperiment();
 
-    void on_toolButtonImport_clicked();
     void on_toolButtonExport_clicked();
-    void on_pushButtonImport_clicked();
     void on_pushButtonExport_clicked();
+    void on_toolButtonImport_clicked();
+    void on_pushButtonImport_clicked();
 
     void on_pushButtonSetP_clicked();
     void on_pushButtonSetT_clicked();
 
     void loadConfig();
     void saveConfig();
+
+    void on_comboBoxChannel_1_currentTextChanged(const QString &arg1);
+    void on_comboBoxChannel_2_currentTextChanged(const QString &arg1);
+    void on_comboBoxChannel_3_currentTextChanged(const QString &arg1);
+    void on_comboBoxChannel_4_currentTextChanged(const QString &arg1);
+    void on_comboBoxChannel_5_currentTextChanged(const QString &arg1);
+
 
 private:
     Ui::Gefest *ui;
